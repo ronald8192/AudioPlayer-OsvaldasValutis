@@ -97,13 +97,26 @@
 					{
 						theRealEvent	= isTouch ? e.originalEvent.touches[ 0 ] : e;
 						theAudio.volume = Math.abs( ( theRealEvent.pageY - ( volumeAdjuster.offset().top + volumeAdjuster.height() ) ) / volumeAdjuster.height() );
+					};
+				var updateLoadBarFunc = function(){
+					if(!updateLoadBarIntervalRunning){
+						updateLoadBarIntervalRunning = true;
+						var updateLoadBar = 
+							setInterval( function(){
+								if(isNaN(theAudio.duration)){
+									clearInterval( updateLoadBar );
+									updateLoadBarIntervalRunning = false;
+								}else{
+									barLoaded.width( ( theAudio.buffered.end( 0 ) / theAudio.duration ) * 100 + '%' );
+									if( theAudio.buffered.end( 0 ) >= theAudio.duration )
+										clearInterval( updateLoadBar );
+								}
+								
+							}, 100 );
+						}
 					},
-					updateLoadBar = setInterval( function()
-					{
-						barLoaded.width( ( theAudio.buffered.end( 0 ) / theAudio.duration ) * 100 + '%' );
-						if( theAudio.buffered.end( 0 ) >= theAudio.duration )
-							clearInterval( updateLoadBar );
-					}, 100 );
+					updateLoadBarIntervalRunning = false;
+				updateLoadBarFunc();
 
 				var volumeTestDefault = theAudio.volume, volumeTestValue = theAudio.volume = 0.111;
 				if( Math.round( theAudio.volume * 1000 ) / 1000 == volumeTestValue ) theAudio.volume = volumeTestDefault;
@@ -114,6 +127,7 @@
 
 				theAudio.addEventListener( 'loadeddata', function()
 				{
+					updateLoadBarFunc();
 					timeDuration.text( secondsToTime( theAudio.duration ) );
 					volumeAdjuster.find( 'div' ).height( theAudio.volume * 100 + '%' );
 					volumeDefault = theAudio.volume;
@@ -179,6 +193,7 @@
 
 			thePlayer.find( '.' + cssClass.playPause ).on( 'click', function()
 			{
+				updateLoadBarFunc();
 				if( thePlayer.hasClass( cssClass.playing ) )
 				{
 					$( this ).attr( 'title', params.strPlay ).find( 'a' ).html( params.strPlay );
