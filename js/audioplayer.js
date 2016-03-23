@@ -107,7 +107,7 @@
 									clearInterval( updateLoadBar );
 									updateLoadBarIntervalRunning = false;
 								}else{
-									barLoaded.width( ( theAudio.buffered.end( 0 ) / theAudio.duration ) * 100 + '%' );
+									barLoaded.width( ( (theAudio.buffered.length===0 ? 0 : theAudio.buffered.end( 0 )) / theAudio.duration ) * 100 + '%' );
 									if( theAudio.buffered.end( 0 ) >= theAudio.duration )
 										clearInterval( updateLoadBar );
 								}
