@@ -2,9 +2,7 @@
 	AUTHOR: Osvaldas Valutis, www.osvaldas.info
 */
 
-
-
-;(function( $, window, document, undefined )
+(function( $, window, document, undefined )
 {
 	var isTouch		  = 'ontouchstart' in window,
 		eStart		  = isTouch ? 'touchstart'	: 'mousedown',
@@ -41,7 +39,8 @@
 				volumeAdjust: 	'volume-adjust',
 				noVolume: 		'novolume',
 				mute: 			'mute',
-				mini: 			'mini'
+				mini: 			'mini',
+				speed: 			'speed',
 			};
 
 		for( var subName in cssClassSub )
@@ -78,8 +77,8 @@
 			if( isSupport )
 			{
 				thePlayer.find( 'audio' ).css( { 'width': 0, 'height': 0, 'visibility': 'hidden' } );
-				thePlayer.append( '<div class="' + cssClass.time + ' ' + cssClass.timeCurrent + '"></div><div class="' + cssClass.bar + '"><div class="' + cssClass.barLoaded + '"></div><div class="' + cssClass.barPlayed + '"></div></div><div class="' + cssClass.time + ' ' + cssClass.timeDuration + '"></div><div class="' + cssClass.volume + '"><div class="' + cssClass.volumeButton + '" title="' + params.strVolume + '"><a href="#">' + params.strVolume + '</a></div><div class="' + cssClass.volumeAdjust + '"><div><div></div></div></div></div>' );
-
+				thePlayer.append( '<div class="' + cssClass.speed + '">x1</div><div class="' + cssClass.time + ' ' + cssClass.timeCurrent + '"></div><div class="' + cssClass.bar + '"><div class="' + cssClass.barLoaded + '"></div><div class="' + cssClass.barPlayed + '"></div></div><div class="' + cssClass.time + ' ' + cssClass.timeDuration + '"></div><div class="' + cssClass.volume + '"><div class="' + cssClass.volumeButton + '" title="' + params.strVolume + '"><a href="#">' + params.strVolume + '</a></div><div class="' + cssClass.volumeAdjust + '"><div><div></div></div></div></div>' );
+				
 				var theBar			  = thePlayer.find( '.' + cssClass.bar ),
 					barPlayed	 	  = thePlayer.find( '.' + cssClass.barPlayed ),
 					barLoaded	 	  = thePlayer.find( '.' + cssClass.barLoaded ),
@@ -206,10 +205,45 @@
 					thePlayer.addClass( cssClass.playing );
 					isSupport ? theAudio.play() : theAudio.Play();
 				}
+				
 				return false;
+			});
+						
+			thePlayer.find( '.' + cssClass.speed ).on( 'click', function()
+			{
+				switch (theAudio.playbackRate) {
+					case 1: {
+						theAudio.playbackRate = 2;
+						this.innerText= 'x2';
+						break;
+					}
+					case 2: {
+						theAudio.playbackRate = 4;
+						this.innerText= 'x4';
+						break;
+					}
+					case 4: {
+						theAudio.playbackRate = 1;
+						this.innerText= 'x1';
+						break;
+					}
+				}
 			});
 
 			$this.replaceWith( thePlayer );
+			
+			var audioTrack = WaveSurfer.create({
+				container: ".audioplayer-bar",
+				waveColor: "#eee",
+				barWidth: 1,
+				height: 22,
+				hideScrollbar: true,
+				fillParent: true,
+				responsive: true
+			});
+
+			audioTrack.load(audioFile);
+
 		});
 		return this;
 	};
